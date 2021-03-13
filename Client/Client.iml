@@ -8,6 +8,7 @@
     <orderEntry type="jdk" jdkName="15" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Partager" />
-    <orderEntry type="library" name="JavaFX15" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="SceneBuilder-15.0.1-all" level="project" />
   </component>
 </module>
