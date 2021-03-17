@@ -53,8 +53,40 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
     }
 
     @Override
-    public String getAffichage(int numParie) throws RemoteException {
-        return listeMotJouer.get(numParie);
+    public String getAffichage(int numPartie) throws RemoteException {
+        String  affichage = new String();
+        boolean trouver;
+        int i;
+        int j;
+
+        listeLettreTrouver.get(numPartie).add('a');
+        i = 0;
+        while (i < listeMotJouer.get(numPartie).length()) {
+            trouver = false;
+
+            j = 0;
+            while (j < listeLettreTrouver.get(numPartie).size()) {
+                if (listeMotJouer.get(numPartie).charAt(i) == listeLettreTrouver.get(numPartie).get(j) || Character.toLowerCase(listeMotJouer.get(numPartie).charAt(i)) == listeLettreTrouver.get(numPartie).get(j)) {
+                    affichage += " " + listeMotJouer.get(numPartie).charAt(i);
+                    trouver = true;
+                }
+            }
+            if (!trouver) {
+                affichage += " _";
+            }
+        }
+
+        return "affichage";
+    }
+
+    @Override
+    public String getMot(int numPartie) throws RemoteException {
+        return listeMotJouer.get(numPartie);
+    }
+
+    @Override
+    public int getNbEssais(int numPartie) throws RemoteException {
+        return listeNbEssais.get(numPartie);
     }
 
     @Override
