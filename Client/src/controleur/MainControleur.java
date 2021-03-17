@@ -1,11 +1,18 @@
 package controleur;
 
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.IOException;
+import java.net.URL;
 import java.net.URI;
+import java.awt.*;
 
 public class MainControleur
 {
@@ -19,8 +26,23 @@ public class MainControleur
         }
     }
 
-    public void goToPendu(MouseEvent mouseEvent)
-    {
+    @FXML
+    public void goToPendu(ActionEvent event) {
+        try {
+            URL fxmlURL = getClass().getResource("../vue/PenduVue.fxml");
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Jeu");
+            stage.setScene(new Scene(root, 800, 500));
+            stage.showAndWait();
+        } catch (Exception e) {
+            System.out.println("Execption : " + e);
+        }
     }
 
     public void goToAllumettes(MouseEvent mouseEvent)

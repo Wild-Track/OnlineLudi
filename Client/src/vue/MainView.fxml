@@ -20,7 +20,7 @@
 <children>
     <TilePane alignment="CENTER" hgap="100.0" prefHeight="540.0" prefWidth="630.0" vgap="100.0">
         <children>
-            <Button fx:id="buttonPendu" mnemonicParsing="false" onMouseClicked="#goToPendu" prefHeight="135.0" prefWidth="138.0" text="Pendu">
+            <Button fx:id="buttonPendu" mnemonicParsing="false" onAction="#goToPendu" onMouseClicked="#goToPendu" prefHeight="135.0" prefWidth="138.0" text="Pendu">
                 <!--<graphic>
                     <ImageView id="logo" pickOnBounds="true">
                         <image>

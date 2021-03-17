@@ -10,5 +10,6 @@
     <orderEntry type="module" module-name="Partager" />
     <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="SceneBuilder-15.0.1-all" level="project" />
+    <orderEntry type="module" module-name="Serveur" />
   </component>
 </module>
