@@ -15,7 +15,7 @@
             <Font name="Arial" size="20.0" />
          </font>
       </Label>
-      <Label fx:id="lbl_messageFin" alignment="CENTER" contentDisplay="CENTER" layoutX="1.0" layoutY="236.0" prefHeight="29.0" prefWidth="800.0" text="Message de fin">
+      <Label fx:id="lbl_messageFin" alignment="CENTER" contentDisplay="CENTER" layoutX="1.0" layoutY="236.0" prefHeight="49.0" prefWidth="800.0" text="Message de fin">
          <font>
             <Font name="Arial" size="14.0" />
          </font>

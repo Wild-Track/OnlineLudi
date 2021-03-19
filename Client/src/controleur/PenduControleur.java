@@ -20,10 +20,17 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/*
+- Gérer le contenue des labels
+- Gérer l'image du pendu
+- . . .
+ */
+
 public class PenduControleur implements Initializable {
-    private PenduInterface      objPendu;
-    private int                 numPartie;
     private ArrayList<Button>   listeBouton;
+    private PenduInterface      objPendu;
+    private         int         numPartie;
+    private static  int         nbEssaisTotal;
 
     @FXML
     private Label lbl_mot;
@@ -103,9 +110,24 @@ public class PenduControleur implements Initializable {
             connexion();
             initialisationListeBouton();
 
+            nbEssaisTotal = objPendu.getNbEssaisTotal();
+
             nouvellePartie();
         } catch (Exception e) {
             System.out.println("Erreur Client / PenduControleur / initialize : " + e);
+        }
+    }
+
+    // ----- ----- Tout les fonctions intermédiaire ----- ----- //
+
+    private void connexion() {
+        int port;
+        port = 8000;
+
+        try {
+            objPendu = (PenduInterface) Naming.lookup("rmi://localhost:" + port + "/pendu");
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            System.out.println("Erreur Client / PenduControleur / connexion : " + e);
         }
     }
 
@@ -116,8 +138,11 @@ public class PenduControleur implements Initializable {
             numPartie = objPendu.nouvellePartie();
 
             lbl_mot.setText(objPendu.getMot(numPartie));
-            //lbl_affichage.setText(objPendu.getAffichage(numPartie));
-            lbl_nbEssais.setText(String.valueOf(7 - objPendu.getNbEssais(numPartie)));
+            lbl_affichage.setText(objPendu.getAffichage(numPartie));
+            lbl_nbEssais.setText(String.valueOf(nbEssaisTotal - objPendu.getNbEssais(numPartie)));
+
+            btn_quitte.setVisible(true);
+            btn_nouvellePartie.setVisible(true);
 
             i = 0;
             while (i < listeBouton.size()) {
@@ -128,6 +153,45 @@ public class PenduControleur implements Initializable {
             System.out.println("Erreur Client / PenduControleur / OnCick_nouvellePartie : " + e);
         }
     }
+
+    private void actualiseAffichage(char lettre) {
+        try {
+            objPendu.lettreTrouver(numPartie, lettre);
+            lbl_nbEssais.setText(Integer.toString(nbEssaisTotal - objPendu.getNbEssais(numPartie)));
+            lbl_affichage.setText(objPendu.getAffichage(numPartie));
+
+            if (objPendu.finPartie(numPartie)) {
+                partieTerminer();
+            }
+        } catch (Exception e) {
+            System.out.println("Erreur Client / PenduControleur / actualiseAffichage : " + e);
+        }
+    }
+
+    private void partieTerminer() {
+        int nbEssais;
+        int i;
+
+        try {
+            nbEssais = objPendu.getNbEssais(numPartie);
+
+            i = 0;
+            while (i < listeBouton.size()) {
+                listeBouton.get(i).setDisable(true);
+                i++;
+            }
+
+            if (nbEssais >= nbEssaisTotal) {
+                lbl_messageFin.setText("Vous avez perdu la partie");
+            } else {
+                lbl_messageFin.setText("Bravo, vous avez gagner la partie !!!\nIl vous restait encore : " + (nbEssaisTotal - nbEssais) + " Essais");
+            }
+        } catch (Exception e) {
+            System.out.println("Erreur Client / PenduControleur / partieTerminer : " + e);
+        }
+    }
+
+    // ----- ----- Gestion des OnCick ----- ----- //
 
     @FXML
     void OnCick_nouvellePartie(ActionEvent event) {
@@ -147,35 +211,7 @@ public class PenduControleur implements Initializable {
         }
     }
 
-    private void connexion() {
-        int port;
-        port = 8000;
-
-        try {
-            objPendu = (PenduInterface) Naming.lookup("rmi://localhost:" + port + "/pendu");
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            System.out.println("Erreur Client / PenduControleur / connexion : " + e);
-        }
-    }
-
-    private void actualiseAffichage(char c) {
-        try {
-
-            if (objPendu.finPartie(numPartie)) {
-                partieTerminer();
-            }
-        } catch (Exception e) {
-            System.out.println("Erreur Client / PenduControleur / actualiseAffichage : " + e);
-        }
-    }
-
-    private void partieTerminer() {
-        try {
-
-        } catch (Exception e) {
-            System.out.println("Erreur Client / PenduControleur / partieTerminer : " + e);
-        }
-    }
+    // ----- ----- Gestion des boutons : listeBouton et OnCick ----- ----- //
 
     private void initialisationListeBouton() {
         listeBouton = new ArrayList<Button>();
@@ -330,6 +366,7 @@ public class PenduControleur implements Initializable {
     @FXML
     void OnCick_boutonT(ActionEvent event) {
         actualiseAffichage('t');
+        btn_t.setDisable(true);
     }
 
     @FXML
