@@ -8,13 +8,14 @@ import java.util.Locale;
 
 public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
     /* ArrayList générique */
+    private static ArrayList<String>                listeImage;
     private static ArrayList<String>                listeTousLesMots;
     /* ArrayList pour le joueur */
     private static ArrayList<ArrayList<Character>>  listeLettreTrouver;
     private static ArrayList<Integer>               listeNbEssais;
     private static ArrayList<String>                listeMotJouer;
 
-    private final int nbEssaisTotal;
+    private static int nbEssaisTotal;
     private static int numPartie;
 
     public PenduImpl() throws RemoteException {
@@ -26,6 +27,9 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         listeNbEssais = new ArrayList<Integer>();
         listeMotJouer = new ArrayList<String>();
 
+        listeImage = new ArrayList<String>();
+        implementationDesAdresseImages();
+
         listeTousLesMots = new ArrayList<String>();
         implementationDeTousLesMots();
     }
@@ -36,20 +40,31 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         listeTousLesMots.add("Leo");
         listeTousLesMots.add("Java");
         listeTousLesMots.add("OCaml");
-        listeTousLesMots.add("AFK");
-        listeTousLesMots.add("Genshin");
+        listeTousLesMots.add("AFK Arena");
+        listeTousLesMots.add("Genshin Impact");
         listeTousLesMots.add("Neko");
         listeTousLesMots.add("Anime");
         listeTousLesMots.add("Manga");
+    }
+
+    private static void implementationDesAdresseImages() {
+        int i;
+        for (i = 0; i <= nbEssaisTotal; i++) {
+            listeImage.add("modele/pendu/image/Pendu" + i + ".png");
+        }
     }
 
     @Override
     public int nouvellePartie() throws RemoteException {
         numPartie++;
 
-        listeMotJouer.add(listeTousLesMots.get((int) (Math.random() * listeTousLesMots.size())));
         listeLettreTrouver.add(new ArrayList<>());
+        listeLettreTrouver.get(numPartie).add(' '); // les mots peuvent avoir un espace
+        listeLettreTrouver.get(numPartie).add('-'); // les mots peuvent avoir un -
+        listeLettreTrouver.get(numPartie).add('\'');// les mots peuvent avoir un '
+
         listeNbEssais.add(0);
+        listeMotJouer.add(listeTousLesMots.get((int) (Math.random() * listeTousLesMots.size())));
 
         return numPartie;
     }
@@ -58,20 +73,21 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
     public String getAffichage(int numPartie) throws RemoteException {
         String  affichage = new String();
         boolean trouver;
-        char  motJouer;
+        char  lettreMotJouer;
         int i;
         int j;
 
         i = 0;
         while (i < listeMotJouer.get(numPartie).length()) {
-            motJouer = listeMotJouer.get(numPartie).toLowerCase().charAt(i);
+            lettreMotJouer = listeMotJouer.get(numPartie).toLowerCase().charAt(i);
             trouver = false;
 
             j = 0;
             while (j < listeLettreTrouver.get(numPartie).size()) {
-                if (motJouer == listeLettreTrouver.get(numPartie).get(j)) {
+                if (lettreMotJouer == listeLettreTrouver.get(numPartie).get(j)) {
                     affichage += " " + listeMotJouer.get(numPartie).toUpperCase(Locale.ROOT).charAt(i);
                     trouver = true;
+
                 }
                 j++;
             }
@@ -91,6 +107,11 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         } else {
             listeNbEssais.set(numPartie, listeNbEssais.get(numPartie) + 1);
         }
+    }
+
+    @Override
+    public String getAdresseImage(int nbEssais) throws RemoteException {
+        return listeImage.get(nbEssais);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package controleur;
 
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import pendu.PenduInterface;
 
 import javafx.event.ActionEvent;
@@ -28,12 +30,9 @@ import java.util.ResourceBundle;
 
 public class PenduControleur implements Initializable {
     private ArrayList<Button>   listeBouton;
-    private PenduInterface      objPendu;
+    private PenduInterface      objPenduServ;
     private         int         numPartie;
     private static  int         nbEssaisTotal;
-
-    @FXML
-    private Label lbl_mot;
 
     @FXML
     private Label lbl_affichage;
@@ -41,6 +40,9 @@ public class PenduControleur implements Initializable {
     private Label lbl_messageFin;
     @FXML
     private Label lbl_nbEssais;
+
+    @FXML
+    private ImageView imgView_pendu;
 
     @FXML
     private Button btn_a;
@@ -104,13 +106,11 @@ public class PenduControleur implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        int i;
-
         try {
             connexion();
             initialisationListeBouton();
 
-            nbEssaisTotal = objPendu.getNbEssaisTotal();
+            nbEssaisTotal = objPenduServ.getNbEssaisTotal();
 
             nouvellePartie();
         } catch (Exception e) {
@@ -120,29 +120,20 @@ public class PenduControleur implements Initializable {
 
     // ----- ----- Tout les fonctions intermédiaire ----- ----- //
 
-    private void connexion() {
-        int port;
-        port = 8000;
-
-        try {
-            objPendu = (PenduInterface) Naming.lookup("rmi://localhost:" + port + "/pendu");
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            System.out.println("Erreur Client / PenduControleur / connexion : " + e);
-        }
-    }
-
     private void nouvellePartie() {
         int i;
 
         try {
-            numPartie = objPendu.nouvellePartie();
+            numPartie = objPenduServ.nouvellePartie();
 
-            lbl_mot.setText(objPendu.getMot(numPartie));
-            lbl_affichage.setText(objPendu.getAffichage(numPartie));
-            lbl_nbEssais.setText(String.valueOf(nbEssaisTotal - objPendu.getNbEssais(numPartie)));
+            lbl_messageFin.setText("");
+            lbl_affichage.setText(objPenduServ.getAffichage(numPartie));
+            lbl_nbEssais.setText(String.valueOf(nbEssaisTotal - objPenduServ.getNbEssais(numPartie)));
 
-            btn_quitte.setVisible(true);
-            btn_nouvellePartie.setVisible(true);
+            imgView_pendu.setImage(new Image(objPenduServ.getAdresseImage(0)));
+
+            btn_quitte.setVisible(false);
+            btn_nouvellePartie.setVisible(false);
 
             i = 0;
             while (i < listeBouton.size()) {
@@ -155,12 +146,17 @@ public class PenduControleur implements Initializable {
     }
 
     private void actualiseAffichage(char lettre) {
-        try {
-            objPendu.lettreTrouver(numPartie, lettre);
-            lbl_nbEssais.setText(Integer.toString(nbEssaisTotal - objPendu.getNbEssais(numPartie)));
-            lbl_affichage.setText(objPendu.getAffichage(numPartie));
+        int nbEssais;
 
-            if (objPendu.finPartie(numPartie)) {
+        try {
+            objPenduServ.lettreTrouver(numPartie, lettre);
+            nbEssais = objPenduServ.getNbEssais(numPartie);
+
+            lbl_affichage.setText(objPenduServ.getAffichage(numPartie));
+            lbl_nbEssais.setText(Integer.toString(nbEssaisTotal - nbEssais));
+            imgView_pendu.setImage(new Image(objPenduServ.getAdresseImage(nbEssais)));
+
+            if (objPenduServ.finPartie(numPartie)) {
                 partieTerminer();
             }
         } catch (Exception e) {
@@ -173,7 +169,10 @@ public class PenduControleur implements Initializable {
         int i;
 
         try {
-            nbEssais = objPendu.getNbEssais(numPartie);
+            nbEssais = objPenduServ.getNbEssais(numPartie);
+
+            btn_quitte.setVisible(true);
+            btn_nouvellePartie.setVisible(true);
 
             i = 0;
             while (i < listeBouton.size()) {
@@ -184,10 +183,21 @@ public class PenduControleur implements Initializable {
             if (nbEssais >= nbEssaisTotal) {
                 lbl_messageFin.setText("Vous avez perdu la partie");
             } else {
-                lbl_messageFin.setText("Bravo, vous avez gagner la partie !!!\nIl vous restait encore : " + (nbEssaisTotal - nbEssais) + " Essais");
+                lbl_messageFin.setText("Bravo, vous avez gagner la partie !!!");
             }
         } catch (Exception e) {
             System.out.println("Erreur Client / PenduControleur / partieTerminer : " + e);
+        }
+    }
+
+    private void connexion() {
+        int port;
+        port = 8000;
+
+        try {
+            objPenduServ = (PenduInterface) Naming.lookup("rmi://localhost:" + port + "/pendu");
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            System.out.println("Erreur Client / PenduControleur / connexion : " + e);
         }
     }
 
