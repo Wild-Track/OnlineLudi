@@ -1,13 +1,13 @@
 package controleur;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.FXML;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,7 +29,7 @@ public class MainControleur
     @FXML
     public void goToPendu(ActionEvent event) {
         try {
-            URL fxmlURL = getClass().getResource("../vue/PenduVue.fxml");
+            URL fxmlURL = getClass().getResource("../vue/pendu/PenduVue.fxml"); // PenduVue
             FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
             Parent root = fxmlLoader.load();
 
@@ -37,11 +37,30 @@ public class MainControleur
 
             stage.setResizable(false);
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Jeu");
+            stage.setTitle("Jeu du Pendu");
             stage.setScene(new Scene(root, 800, 500));
             stage.showAndWait();
         } catch (Exception e) {
-            System.out.println("Execption : " + e);
+            System.out.println("Erreur Client / MainControleur / goToPendu : " + e);
+        }
+    }
+
+    @FXML
+    void OnCick_State(ActionEvent event) {
+        try {
+            URL fxmlURL = getClass().getResource("../vue/pendu/StateVue.fxml");
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Pendu : Info sur les parties");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.showAndWait();
+        } catch (Exception e) {
+            System.out.println("Erreur Client / PenduControleur / OnCick_State : " + e);
         }
     }
 

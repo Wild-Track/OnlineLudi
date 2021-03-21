@@ -38,6 +38,7 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         listeTousLesMots.add("Brice");
         listeTousLesMots.add("Nicolas");
         listeTousLesMots.add("Leo");
+        listeTousLesMots.add("Jean-Paul Gaultier");
         listeTousLesMots.add("Java");
         listeTousLesMots.add("OCaml");
         listeTousLesMots.add("AFK Arena");
@@ -61,7 +62,6 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         listeLettreTrouver.add(new ArrayList<>());
         listeLettreTrouver.get(numPartie).add(' '); // les mots peuvent avoir un espace
         listeLettreTrouver.get(numPartie).add('-'); // les mots peuvent avoir un -
-        listeLettreTrouver.get(numPartie).add('\'');// les mots peuvent avoir un '
 
         listeNbEssais.add(0);
         listeMotJouer.add(listeTousLesMots.get((int) (Math.random() * listeTousLesMots.size())));

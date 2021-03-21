@@ -1,16 +1,19 @@
-package controleur;
+package controleur.pendu;
 
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import modele.pendu.Pendu;
 import pendu.PenduInterface;
 
-import javafx.event.ActionEvent;
-import javafx.application.Platform;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.Modality;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.FXML;
 
 import java.net.URL;
@@ -19,18 +22,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.Naming;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
-/*
-- Gérer le contenue des labels
-- Gérer l'image du pendu
-- . . .
- */
-
-public class PenduControleur implements Initializable {
-    private ArrayList<Button>   listeBouton;
-    private PenduInterface      objPenduServ;
+public class PenduControleur extends Pendu implements Initializable {
+    private ArrayList<Button>   listeBoutonLettre;
+    //private PenduInterface      objPenduServ;
     private         int         numPartie;
     private static  int         nbEssaisTotal;
 
@@ -38,6 +34,8 @@ public class PenduControleur implements Initializable {
     private Label lbl_affichage;
     @FXML
     private Label lbl_messageFin;
+    @FXML
+    private Label lbl_reponse;
     @FXML
     private Label lbl_nbEssais;
 
@@ -100,7 +98,7 @@ public class PenduControleur implements Initializable {
     private Button btn_n;
 
     @FXML
-    private Button btn_quitte;
+    private Button btn_state;
     @FXML
     private Button btn_nouvellePartie;
 
@@ -126,18 +124,19 @@ public class PenduControleur implements Initializable {
         try {
             numPartie = objPenduServ.nouvellePartie();
 
+            lbl_reponse.setText("");
             lbl_messageFin.setText("");
             lbl_affichage.setText(objPenduServ.getAffichage(numPartie));
             lbl_nbEssais.setText(String.valueOf(nbEssaisTotal - objPenduServ.getNbEssais(numPartie)));
 
             imgView_pendu.setImage(new Image(objPenduServ.getAdresseImage(0)));
 
-            btn_quitte.setVisible(false);
+            btn_state.setVisible(false);
             btn_nouvellePartie.setVisible(false);
 
             i = 0;
-            while (i < listeBouton.size()) {
-                listeBouton.get(i).setDisable(false);
+            while (i < listeBoutonLettre.size()) {
+                listeBoutonLettre.get(i).setDisable(false);
                 i++;
             }
         } catch (Exception e) {
@@ -171,17 +170,18 @@ public class PenduControleur implements Initializable {
         try {
             nbEssais = objPenduServ.getNbEssais(numPartie);
 
-            btn_quitte.setVisible(true);
+            btn_state.setVisible(true);
             btn_nouvellePartie.setVisible(true);
 
             i = 0;
-            while (i < listeBouton.size()) {
-                listeBouton.get(i).setDisable(true);
+            while (i < listeBoutonLettre.size()) {
+                listeBoutonLettre.get(i).setDisable(true);
                 i++;
             }
 
             if (nbEssais >= nbEssaisTotal) {
                 lbl_messageFin.setText("Vous avez perdu la partie");
+                lbl_reponse.setText(objPenduServ.getMot(numPartie));
             } else {
                 lbl_messageFin.setText("Bravo, vous avez gagner la partie !!!");
             }
@@ -190,7 +190,7 @@ public class PenduControleur implements Initializable {
         }
     }
 
-    private void connexion() {
+    /*private void connexion() {
         int port;
         port = 8000;
 
@@ -199,64 +199,70 @@ public class PenduControleur implements Initializable {
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             System.out.println("Erreur Client / PenduControleur / connexion : " + e);
         }
-    }
+    }*/
 
     // ----- ----- Gestion des OnCick ----- ----- //
 
     @FXML
-    void OnCick_nouvellePartie(ActionEvent event) {
-        nouvellePartie();
+    void OnCick_State(ActionEvent event) {
+        try {
+            URL fxmlURL = getClass().getResource("../vue/pendu/StateVue.fxml");
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Pendu : Info sur les parties");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.showAndWait();
+        } catch (Exception e) {
+            System.out.println("Erreur Client / PenduControleur / OnCick_State : " + e);
+        }
     }
 
     @FXML
-    void OnCick_Quitter(ActionEvent event) {
-        Alert alert;
-        alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Quitter le jeu");
-        alert.setHeaderText("Êtes-vous sûr de vouloir quitter ce jeu ?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
-            Platform.exit();
-        }
+    void OnCick_NouvellePartie(ActionEvent event) {
+        nouvellePartie();
     }
 
     // ----- ----- Gestion des boutons : listeBouton et OnCick ----- ----- //
 
     private void initialisationListeBouton() {
-        listeBouton = new ArrayList<Button>();
+        listeBoutonLettre = new ArrayList<Button>();
 
-        listeBouton.add(btn_a);
-        listeBouton.add(btn_b);
-        listeBouton.add(btn_c);
-        listeBouton.add(btn_d);
-        listeBouton.add(btn_e);
+        listeBoutonLettre.add(btn_a);
+        listeBoutonLettre.add(btn_b);
+        listeBoutonLettre.add(btn_c);
+        listeBoutonLettre.add(btn_d);
+        listeBoutonLettre.add(btn_e);
 
-        listeBouton.add(btn_f);
-        listeBouton.add(btn_g);
-        listeBouton.add(btn_h);
-        listeBouton.add(btn_i);
-        listeBouton.add(btn_j);
+        listeBoutonLettre.add(btn_f);
+        listeBoutonLettre.add(btn_g);
+        listeBoutonLettre.add(btn_h);
+        listeBoutonLettre.add(btn_i);
+        listeBoutonLettre.add(btn_j);
 
-        listeBouton.add(btn_k);
-        listeBouton.add(btn_l);
-        listeBouton.add(btn_m);
-        listeBouton.add(btn_n);
-        listeBouton.add(btn_o);
+        listeBoutonLettre.add(btn_k);
+        listeBoutonLettre.add(btn_l);
+        listeBoutonLettre.add(btn_m);
+        listeBoutonLettre.add(btn_n);
+        listeBoutonLettre.add(btn_o);
 
-        listeBouton.add(btn_p);
-        listeBouton.add(btn_q);
-        listeBouton.add(btn_r);
-        listeBouton.add(btn_s);
-        listeBouton.add(btn_t);
+        listeBoutonLettre.add(btn_p);
+        listeBoutonLettre.add(btn_q);
+        listeBoutonLettre.add(btn_r);
+        listeBoutonLettre.add(btn_s);
+        listeBoutonLettre.add(btn_t);
 
-        listeBouton.add(btn_u);
-        listeBouton.add(btn_v);
-        listeBouton.add(btn_w);
-        listeBouton.add(btn_x);
-        listeBouton.add(btn_y);
+        listeBoutonLettre.add(btn_u);
+        listeBoutonLettre.add(btn_v);
+        listeBoutonLettre.add(btn_w);
+        listeBoutonLettre.add(btn_x);
+        listeBoutonLettre.add(btn_y);
 
-        listeBouton.add(btn_z);
+        listeBoutonLettre.add(btn_z);
     }
 
     @FXML
