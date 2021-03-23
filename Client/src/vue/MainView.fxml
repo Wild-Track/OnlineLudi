@@ -54,7 +54,6 @@
     </TilePane>
     <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="50.0" GridPane.rowIndex="1">
         <children>
-            <Button mnemonicParsing="false" onAction="#OnCick_State" text="States Pendu" />
             <Hyperlink fx:id="hyperlink_Github" onAction="#hyperlink_Github_OnClick" text="Github" />
         </children>
         <GridPane.margin>

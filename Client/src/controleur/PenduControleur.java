@@ -1,19 +1,19 @@
-package controleur.pendu;
+package controleur;
 
-import modele.pendu.Pendu;
+import modele.pendu.TablePendu;
+
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import pendu.PenduInterface;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.Modality;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.FXML;
 
 import java.net.URL;
@@ -22,20 +22,26 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.Naming;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
-public class PenduControleur extends Pendu implements Initializable {
+public class PenduControleur implements Initializable {
     private ArrayList<Button>   listeBoutonLettre;
-    //private PenduInterface      objPenduServ;
+    private PenduInterface      objPenduServ;
     private         int         numPartie;
     private static  int         nbEssaisTotal;
 
+    /* ----- ----- Appel de tout les variables pour le jeu du pendu ----- ----- */
+
+    @FXML
+    private Pane pane_pendu;
+
+    @FXML
+    private Label lbl_reponse;
     @FXML
     private Label lbl_affichage;
     @FXML
     private Label lbl_messageFin;
-    @FXML
-    private Label lbl_reponse;
     @FXML
     private Label lbl_nbEssais;
 
@@ -100,7 +106,26 @@ public class PenduControleur extends Pendu implements Initializable {
     @FXML
     private Button btn_state;
     @FXML
-    private Button btn_nouvellePartie;
+    private Button btn_nouvellePartiePendu;
+
+    /* ----- ----- Appel de tout les variables pour le jeu du pendu ----- ----- */
+
+    @FXML
+    private Pane pane_state;
+
+    @FXML
+    private Label lbl_nbPartieJouer;
+    @FXML
+    private Label lbl_nbPartieG;
+    @FXML
+    private Label lbl_nbPartieP;
+    @FXML
+    private Label lbl_ratio;
+    @FXML
+    private Label lbl_nbEssaisMoy;
+
+    @FXML
+    private TableView<TablePendu> tbl_parties;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -110,13 +135,18 @@ public class PenduControleur extends Pendu implements Initializable {
 
             nbEssaisTotal = objPenduServ.getNbEssaisTotal();
 
+            initialisationTable();
+
+            pane_pendu.setVisible(true);
+            pane_state.setVisible(false);
+
             nouvellePartie();
         } catch (Exception e) {
             System.out.println("Erreur Client / PenduControleur / initialize : " + e);
         }
     }
 
-    // ----- ----- Tout les fonctions intermédiaire ----- ----- //
+    // ----- ----- Tout les fonctions intermédiaire pour le jeu du pendu ----- ----- //
 
     private void nouvellePartie() {
         int i;
@@ -132,7 +162,7 @@ public class PenduControleur extends Pendu implements Initializable {
             imgView_pendu.setImage(new Image(objPenduServ.getAdresseImage(0)));
 
             btn_state.setVisible(false);
-            btn_nouvellePartie.setVisible(false);
+            btn_nouvellePartiePendu.setVisible(false);
 
             i = 0;
             while (i < listeBoutonLettre.size()) {
@@ -171,7 +201,7 @@ public class PenduControleur extends Pendu implements Initializable {
             nbEssais = objPenduServ.getNbEssais(numPartie);
 
             btn_state.setVisible(true);
-            btn_nouvellePartie.setVisible(true);
+            btn_nouvellePartiePendu.setVisible(true);
 
             i = 0;
             while (i < listeBoutonLettre.size()) {
@@ -190,44 +220,110 @@ public class PenduControleur extends Pendu implements Initializable {
         }
     }
 
-    /*private void connexion() {
-        int port;
-        port = 8000;
+    private void connexion() {
+        int port = 8000;
 
         try {
             objPenduServ = (PenduInterface) Naming.lookup("rmi://localhost:" + port + "/pendu");
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             System.out.println("Erreur Client / PenduControleur / connexion : " + e);
         }
-    }*/
+    }
 
-    // ----- ----- Gestion des OnCick ----- ----- //
+    // ----- ----- Gestion de tous les OnCick pour le jeu du pendu ----- ----- //
 
     @FXML
     void OnCick_State(ActionEvent event) {
         try {
-            URL fxmlURL = getClass().getResource("../vue/pendu/StateVue.fxml");
-            FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
-            Parent root = fxmlLoader.load();
+            pane_state.setVisible(true);
+            pane_pendu.setVisible(false);
 
-            Stage stage = new Stage();
-
-            stage.setResizable(false);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Pendu : Info sur les parties");
-            stage.setScene(new Scene(root, 600, 400));
-            stage.showAndWait();
+            miseEnPlaceDesStates();
         } catch (Exception e) {
             System.out.println("Erreur Client / PenduControleur / OnCick_State : " + e);
         }
     }
 
     @FXML
-    void OnCick_NouvellePartie(ActionEvent event) {
+    void OnCick_NouvellePartiePendu(ActionEvent event) {
         nouvellePartie();
     }
 
-    // ----- ----- Gestion des boutons : listeBouton et OnCick ----- ----- //
+    // ----- ----- Tout les fonctions intermédiaire pour les states ----- ----- //
+
+    private void miseEnPlaceDesStates() {
+        int nbPartieJouer;
+        int nbPartieGagnee;
+        int nbPartiePerdu;
+
+        try {
+            nbPartieJouer = objPenduServ.getNbPartiejouer();
+            nbPartieGagnee = objPenduServ.getNbPartieGagnee();
+            nbPartiePerdu = nbPartieJouer - nbPartieGagnee;
+
+            lbl_nbPartieJouer.setText(String.valueOf(nbPartieJouer));
+            lbl_nbPartieG.setText(String.valueOf(nbPartieGagnee));
+            lbl_nbPartieP.setText(String.valueOf(nbPartiePerdu));
+            lbl_nbEssaisMoy.setText(String.valueOf(objPenduServ.getNbEssaisMoyen()));
+            if (nbPartiePerdu == 0) {
+                lbl_ratio.setText(String.valueOf((float) nbPartieGagnee));
+            } else {
+                lbl_ratio.setText(String.valueOf((float) nbPartieGagnee / nbPartiePerdu));
+            }
+
+            miseEnPlaceDuTableau();
+        } catch (Exception e) {
+            System.out.println("Erreur Client / PenduControleur / miseEnPlaceState : " + e);
+        }
+    }
+
+    private void miseEnPlaceDuTableau() {
+        TablePendu ligneTable;
+
+        try {
+            ligneTable = new TablePendu();
+
+            ligneTable.setNumPartie(numPartie + 1);
+            ligneTable.setMotJouer(objPenduServ.getMot(numPartie));
+            ligneTable.setMotTrouver(objPenduServ.getAffichage(numPartie));
+            ligneTable.setNbEssais(objPenduServ.getNbEssais(numPartie));
+
+            tbl_parties.getItems().setAll(ligneTable);
+        } catch (Exception e) {
+            System.out.println("Erreur Client / PenduControleur / miseEnPlaceDuTableau : " + e);
+        }
+    }
+
+    private void initialisationTable() {
+        TableColumn<TablePendu, Integer> colNumPartie = new TableColumn<>("Num partie");
+        colNumPartie.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("numPartie"));
+        colNumPartie.setPrefWidth(75);
+
+        TableColumn<TablePendu, Integer> colMotJouer = new TableColumn<>("Mot jouer");
+        colMotJouer.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("motJouer"));
+        colMotJouer.setPrefWidth(175);
+
+        TableColumn<TablePendu, Integer> colMotTrouver = new TableColumn<>("Mot trouver");
+        colMotTrouver.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("motTrouver"));
+        colMotTrouver.setPrefWidth(175);
+
+        TableColumn<TablePendu, Integer> colNbEssais = new TableColumn<>("Nb essais");
+        colNbEssais.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("nbEssais"));
+        colNbEssais.setPrefWidth(75);
+
+        this.tbl_parties.getColumns().setAll(colNumPartie, colMotJouer, colMotTrouver, colNbEssais);
+    }
+
+    // ----- ----- Gestion de tous les OnCick pour les states ----- ----- //
+
+    @FXML
+    void OnCick_NouvellePartieState(ActionEvent event) {
+        pane_pendu.setVisible(true);
+        pane_state.setVisible(false);
+        nouvellePartie();
+    }
+
+    // ----- ----- Gestion des boutons pour le jeu du pendu : listeBouton et OnCick ----- ----- //
 
     private void initialisationListeBouton() {
         listeBoutonLettre = new ArrayList<Button>();

@@ -34,6 +34,8 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         implementationDeTousLesMots();
     }
 
+    /* ----- ----- Fonction pour le jeu ----- ----- */
+
     private static void implementationDeTousLesMots() {
         listeTousLesMots.add("Brice");
         listeTousLesMots.add("Nicolas");
@@ -148,5 +150,44 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
 
             return trouver;
         }
+    }
+
+    /* ----- ----- Fonction pour les states du jeu ----- ----- */
+
+    @Override
+    public int getNbPartiejouer() throws RemoteException {
+        return listeNbEssais.size();
+    }
+
+    @Override
+    public int getNbPartieGagnee() throws RemoteException {
+        int nbVictoire;
+        int i;
+
+        i = 0;
+        nbVictoire = 0;
+        while (i < listeNbEssais.size()) {
+            if (listeNbEssais.get(i) < nbEssaisTotal) {
+                nbVictoire++;
+            }
+            i++;
+        }
+
+        return nbVictoire;
+    }
+
+    @Override
+    public double getNbEssaisMoyen() throws RemoteException {
+        int sommeEssaisTotal;
+        int i;
+
+        i = 0;
+        sommeEssaisTotal = 0;
+        while (i < listeNbEssais.size()) {
+            sommeEssaisTotal += listeNbEssais.get(i);
+            i++;
+        }
+
+        return ((float) sommeEssaisTotal / listeNbEssais.size());
     }
 }

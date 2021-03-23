@@ -45,25 +45,6 @@ public class MainControleur
         }
     }
 
-    @FXML
-    void OnCick_State(ActionEvent event) {
-        try {
-            URL fxmlURL = getClass().getResource("../vue/pendu/StateVue.fxml");
-            FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
-            Parent root = fxmlLoader.load();
-
-            Stage stage = new Stage();
-
-            stage.setResizable(false);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Pendu : Info sur les parties");
-            stage.setScene(new Scene(root, 600, 400));
-            stage.showAndWait();
-        } catch (Exception e) {
-            System.out.println("Erreur Client / PenduControleur / OnCick_State : " + e);
-        }
-    }
-
     public void goToAllumettes(MouseEvent mouseEvent)
     {
     }
