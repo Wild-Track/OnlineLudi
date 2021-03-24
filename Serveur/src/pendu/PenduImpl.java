@@ -8,7 +8,7 @@ import java.util.Locale;
 
 public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
     /* ArrayList générique */
-    private static ArrayList<String>                listeImage;
+    private static ArrayList<String>                listeAdresseImage;
     private static ArrayList<String>                listeTousLesMots;
     /* ArrayList pour le joueur */
     private static ArrayList<ArrayList<Character>>  listeLettreTrouver;
@@ -27,7 +27,7 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         listeNbEssais = new ArrayList<Integer>();
         listeMotJouer = new ArrayList<String>();
 
-        listeImage = new ArrayList<String>();
+        listeAdresseImage = new ArrayList<String>();
         implementationDesAdresseImages();
 
         listeTousLesMots = new ArrayList<String>();
@@ -36,6 +36,9 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
 
     /* ----- ----- Fonction pour le jeu ----- ----- */
 
+    /**
+     * Implémentation de tous les mots dans l'ArrayList listeTousLesMots
+     */
     private static void implementationDeTousLesMots() {
         listeTousLesMots.add("Brice");
         listeTousLesMots.add("Nicolas");
@@ -50,13 +53,21 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         listeTousLesMots.add("Manga");
     }
 
+    /**
+     * Implementation de toutes les adresses des images pour l'état de la partie dans l'ArrayList listeAdresseImage
+     */
     private static void implementationDesAdresseImages() {
         int i;
         for (i = 0; i <= nbEssaisTotal; i++) {
-            listeImage.add("modele/pendu/image/Pendu" + i + ".png");
+            listeAdresseImage.add("modele/pendu/image/Pendu" + i + ".png");
         }
     }
 
+    /**
+     * Mise ne place d'une nouvelle partie du coté serveur.
+     * @return le numéro de la partie en cours.
+     * @throws RemoteException
+     */
     @Override
     public int nouvellePartie() throws RemoteException {
         numPartie++;
@@ -71,6 +82,26 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         return numPartie;
     }
 
+    /**
+     * Vérifier si la lettre ce trouve dans le mot.
+     * @param numPartie : indicateur permettant de récupérer tout les information de la partie ciblé.
+     * @param lettre : lettre que le jouer à jouer
+     * @throws RemoteException
+     */
+    @Override
+    public void lettreTrouver(int numPartie, char lettre) throws RemoteException {
+        if (listeMotJouer.get(numPartie).toLowerCase(Locale.ROOT).contains(Character.toString(lettre))) {
+            listeLettreTrouver.get(numPartie).add(lettre);
+        } else {
+            listeNbEssais.set(numPartie, listeNbEssais.get(numPartie) + 1);
+        }
+    }
+
+    /**
+     * @param numPartie : indicateur permettant de récupérer tout les information de la partie ciblé.
+     * @return l'affichage sur un format "_ _ X _" de type String
+     * @throws RemoteException
+     */
     @Override
     public String getAffichage(int numPartie) throws RemoteException {
         String  affichage = new String();
@@ -102,35 +133,51 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         return affichage;
     }
 
-    @Override
-    public void lettreTrouver(int numPartie, char lettre) throws RemoteException {
-        if (listeMotJouer.get(numPartie).toLowerCase(Locale.ROOT).contains(Character.toString(lettre))) {
-            listeLettreTrouver.get(numPartie).add(lettre);
-        } else {
-            listeNbEssais.set(numPartie, listeNbEssais.get(numPartie) + 1);
-        }
-    }
-
+    /**
+     * @param nbEssais
+     * @return l'adresse de l'image en fonction du nbEssais
+     * @throws RemoteException
+     */
     @Override
     public String getAdresseImage(int nbEssais) throws RemoteException {
-        return listeImage.get(nbEssais);
+        return listeAdresseImage.get(nbEssais);
     }
 
+    /**
+     * @param numPartie : indicateur permettant de récupérer tout les information de la partie ciblé.
+     * @return le mot à trouver en fonction de numPartie.
+     * @throws RemoteException
+     */
     @Override
-    public String getMot(int numPartie) throws RemoteException {
+    public String getMotJouer(int numPartie) throws RemoteException {
         return listeMotJouer.get(numPartie);
     }
 
+    /**
+     * @param numPartie : indicateur permettant de récupérer tout les information de la partie ciblé.
+     * @return le nombre d'essais en fonction le numPartie.
+     * @throws RemoteException
+     */
     @Override
     public int getNbEssais(int numPartie) throws RemoteException {
         return listeNbEssais.get(numPartie);
     }
 
+    /**
+     * @return le nombre d'essais max possible.
+     * @throws RemoteException
+     */
     @Override
     public int getNbEssaisTotal() throws RemoteException {
         return nbEssaisTotal;
     }
 
+    /**
+     * Indiquant si la partie est terminer mais ne dit pas si le jouer à gagner ou pas.
+     * @param numPartie : indicateur permettant de récupérer tout les information de la partie ciblé.
+     * @return un booléen indiquant si la partie est terminer.
+     * @throws RemoteException
+     */
     @Override
     public Boolean finPartie(int numPartie) throws RemoteException {
         if (listeNbEssais.get(numPartie) >= nbEssaisTotal) {
@@ -154,11 +201,19 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
 
     /* ----- ----- Fonction pour les states du jeu ----- ----- */
 
+    /**
+     * @return le nombre de partie jouer.
+     * @throws RemoteException
+     */
     @Override
     public int getNbPartiejouer() throws RemoteException {
         return listeNbEssais.size();
     }
 
+    /**
+     * @return le nombre de partie gagner.
+     * @throws RemoteException
+     */
     @Override
     public int getNbPartieGagnee() throws RemoteException {
         int nbVictoire;
@@ -176,6 +231,10 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         return nbVictoire;
     }
 
+    /**
+     * @return le nombre d'essais moyenne en fonction de tout les parties.
+     * @throws RemoteException
+     */
     @Override
     public double getNbEssaisMoyen() throws RemoteException {
         int sommeEssaisTotal;

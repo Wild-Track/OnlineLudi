@@ -22,14 +22,13 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.Naming;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class PenduControleur implements Initializable {
-    private ArrayList<Button>   listeBoutonLettre;
-    private PenduInterface      objPenduServ;
-    private         int         numPartie;
-    private static  int         nbEssaisTotal;
+    private ArrayList<Button>   listeBoutonLettre; // liste de tout les boutons lettre
+    private PenduInterface      objPenduServ;     // objet de la connexion avec le serveur
+    private         int         numPartie;       // mémorise le numéro de la partie en cours
+    private static  int         nbEssaisTotal;  // mémorise le nombre d'essais max possible
 
     /* ----- ----- Appel de tout les variables pour le jeu du pendu ----- ----- */
 
@@ -135,7 +134,7 @@ public class PenduControleur implements Initializable {
 
             nbEssaisTotal = objPenduServ.getNbEssaisTotal();
 
-            initialisationTable();
+            initialisationTablePartie();
 
             pane_pendu.setVisible(true);
             pane_state.setVisible(false);
@@ -148,6 +147,10 @@ public class PenduControleur implements Initializable {
 
     // ----- ----- Tout les fonctions intermédiaire pour le jeu du pendu ----- ----- //
 
+    /**
+     * Mise ne place d'une nouvelle partie dans sa globalité.
+     * Interface mise en place et mise en place d'une nouvelle partie cote serveur.
+     */
     private void nouvellePartie() {
         int i;
 
@@ -164,7 +167,7 @@ public class PenduControleur implements Initializable {
             btn_state.setVisible(false);
             btn_nouvellePartiePendu.setVisible(false);
 
-            i = 0;
+            i = 0; // Active tous les boutons lettres.
             while (i < listeBoutonLettre.size()) {
                 listeBoutonLettre.get(i).setDisable(false);
                 i++;
@@ -174,6 +177,11 @@ public class PenduControleur implements Initializable {
         }
     }
 
+    /**
+     * Actualise l'affichage en fonction de la lettre choisi.
+     * Vérifie en même temps si la partie est fini ou non.
+     * @param lettre : lettre que le jouer à choisi.
+     */
     private void actualiseAffichage(char lettre) {
         int nbEssais;
 
@@ -185,6 +193,7 @@ public class PenduControleur implements Initializable {
             lbl_nbEssais.setText(Integer.toString(nbEssaisTotal - nbEssais));
             imgView_pendu.setImage(new Image(objPenduServ.getAdresseImage(nbEssais)));
 
+            // Vérifie si la partie est terminée.
             if (objPenduServ.finPartie(numPartie)) {
                 partieTerminer();
             }
@@ -193,6 +202,10 @@ public class PenduControleur implements Initializable {
         }
     }
 
+    /**
+     * La partie terminer, désactive tout les boutons lettres et active les boutons nouvelle partie et state.
+     * Vérifie si le joueur à gagner ou perdu.
+     */
     private void partieTerminer() {
         int nbEssais;
         int i;
@@ -203,15 +216,16 @@ public class PenduControleur implements Initializable {
             btn_state.setVisible(true);
             btn_nouvellePartiePendu.setVisible(true);
 
-            i = 0;
+            i = 0; // Désactive tous les boutons lettres
             while (i < listeBoutonLettre.size()) {
                 listeBoutonLettre.get(i).setDisable(true);
                 i++;
             }
 
+            // Vérifie si le jouer à gagner ou non.
             if (nbEssais >= nbEssaisTotal) {
                 lbl_messageFin.setText("Vous avez perdu la partie");
-                lbl_reponse.setText(objPenduServ.getMot(numPartie));
+                lbl_reponse.setText(objPenduServ.getMotJouer(numPartie));
             } else {
                 lbl_messageFin.setText("Bravo, vous avez gagner la partie !!!");
             }
@@ -220,6 +234,10 @@ public class PenduControleur implements Initializable {
         }
     }
 
+    /**
+     * Mise ne place de la connexion vec le serveur.
+     * objPenduServ est l'objet de la connexion.
+     */
     private void connexion() {
         int port = 8000;
 
@@ -232,6 +250,11 @@ public class PenduControleur implements Initializable {
 
     // ----- ----- Gestion de tous les OnCick pour le jeu du pendu ----- ----- //
 
+    /**
+     * Action liée quand on clic sur le bouton "state" en monde pendu (jeu).
+     * On passe de l'affichage pendu (jeu) en state (info).
+     * @param event
+     */
     @FXML
     void OnCick_State(ActionEvent event) {
         try {
@@ -244,6 +267,11 @@ public class PenduControleur implements Initializable {
         }
     }
 
+    /**
+     * Action liée quand on clic sur le bouton "nouvelle partie" en mode pendu (jeu).
+     * On relance une nouvelle partie.
+     * @param event
+     */
     @FXML
     void OnCick_NouvellePartiePendu(ActionEvent event) {
         nouvellePartie();
@@ -251,6 +279,54 @@ public class PenduControleur implements Initializable {
 
     // ----- ----- Tout les fonctions intermédiaire pour les states ----- ----- //
 
+    /**
+     * Initialise le tableau des parties.
+     * Nb de colonne, leurs noms et leurs types, leurs largeurs des colonnes.
+     */
+    private void initialisationTablePartie() {
+        TableColumn<TablePendu, Integer> colNumPartie = new TableColumn<>("Num partie");
+        colNumPartie.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("numPartie"));
+        colNumPartie.setPrefWidth(75);
+
+        TableColumn<TablePendu, Integer> colMotJouer = new TableColumn<>("Mot jouer");
+        colMotJouer.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("motJouer"));
+        colMotJouer.setPrefWidth(175);
+
+        TableColumn<TablePendu, Integer> colMotTrouver = new TableColumn<>("Mot trouver");
+        colMotTrouver.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("motTrouver"));
+        colMotTrouver.setPrefWidth(175);
+
+        TableColumn<TablePendu, Integer> colNbEssais = new TableColumn<>("Nb essais");
+        colNbEssais.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("nbEssais"));
+        colNbEssais.setPrefWidth(75);
+
+        this.tbl_parties.getColumns().setAll(colNumPartie, colMotJouer, colMotTrouver, colNbEssais);
+    }
+
+    /**
+     * Remplis le tableau avec les infos de toutes parties, à l'origine.
+     * Mais elle envoie que les infos de la dernier partie.
+     */
+    private void miseEnPlaceDuTableau() {
+        TablePendu ligneTable;
+
+        try {
+            ligneTable = new TablePendu();
+
+            ligneTable.setNumPartie(numPartie + 1);
+            ligneTable.setMotJouer(objPenduServ.getMotJouer(numPartie));
+            ligneTable.setMotTrouver(objPenduServ.getAffichage(numPartie));
+            ligneTable.setNbEssais(objPenduServ.getNbEssais(numPartie));
+
+            tbl_parties.getItems().setAll(ligneTable);
+        } catch (Exception e) {
+            System.out.println("Erreur Client / PenduControleur / miseEnPlaceDuTableau : " + e);
+        }
+    }
+
+    /**
+     * Affiche les states en fonction de toutes les parties passer.
+     */
     private void miseEnPlaceDesStates() {
         int nbPartieJouer;
         int nbPartieGagnee;
@@ -277,45 +353,14 @@ public class PenduControleur implements Initializable {
         }
     }
 
-    private void miseEnPlaceDuTableau() {
-        TablePendu ligneTable;
-
-        try {
-            ligneTable = new TablePendu();
-
-            ligneTable.setNumPartie(numPartie + 1);
-            ligneTable.setMotJouer(objPenduServ.getMot(numPartie));
-            ligneTable.setMotTrouver(objPenduServ.getAffichage(numPartie));
-            ligneTable.setNbEssais(objPenduServ.getNbEssais(numPartie));
-
-            tbl_parties.getItems().setAll(ligneTable);
-        } catch (Exception e) {
-            System.out.println("Erreur Client / PenduControleur / miseEnPlaceDuTableau : " + e);
-        }
-    }
-
-    private void initialisationTable() {
-        TableColumn<TablePendu, Integer> colNumPartie = new TableColumn<>("Num partie");
-        colNumPartie.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("numPartie"));
-        colNumPartie.setPrefWidth(75);
-
-        TableColumn<TablePendu, Integer> colMotJouer = new TableColumn<>("Mot jouer");
-        colMotJouer.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("motJouer"));
-        colMotJouer.setPrefWidth(175);
-
-        TableColumn<TablePendu, Integer> colMotTrouver = new TableColumn<>("Mot trouver");
-        colMotTrouver.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("motTrouver"));
-        colMotTrouver.setPrefWidth(175);
-
-        TableColumn<TablePendu, Integer> colNbEssais = new TableColumn<>("Nb essais");
-        colNbEssais.setCellValueFactory(new PropertyValueFactory<TablePendu, Integer>("nbEssais"));
-        colNbEssais.setPrefWidth(75);
-
-        this.tbl_parties.getColumns().setAll(colNumPartie, colMotJouer, colMotTrouver, colNbEssais);
-    }
-
     // ----- ----- Gestion de tous les OnCick pour les states ----- ----- //
 
+    /**
+     * Action liée quand on clic sur le bouton "nouvelle partie" en mode state (info).
+     * On passe de l'affichage state (info) en pendu (jeu).
+     * On relance une nouvelle partie.
+     * @param event
+     */
     @FXML
     void OnCick_NouvellePartieState(ActionEvent event) {
         pane_pendu.setVisible(true);
@@ -325,6 +370,9 @@ public class PenduControleur implements Initializable {
 
     // ----- ----- Gestion des boutons pour le jeu du pendu : listeBouton et OnCick ----- ----- //
 
+    /**
+     * Initialisation de tout les boutons dans l'ArrayList listeBoutonLettre.
+     */
     private void initialisationListeBouton() {
         listeBoutonLettre = new ArrayList<Button>();
 
@@ -360,6 +408,12 @@ public class PenduControleur implements Initializable {
 
         listeBoutonLettre.add(btn_z);
     }
+
+        /* ------------------------------------------------------- */
+       /* Action pour tous les boutons lettre en mode pendu (jeu) */
+      /* Actualise l'affichage en fonction de la lettre          */
+     /* Désactive le bouton après clic                          */
+    /* ------------------------------------------------------- */
 
     @FXML
     void OnCick_boutonA(ActionEvent event) {
