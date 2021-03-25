@@ -1,10 +1,14 @@
 package pendu;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-
 import java.util.ArrayList;
 import java.util.Locale;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
     /* ArrayList générique */
@@ -40,6 +44,20 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
      * Implémentation de tous les mots dans l'ArrayList listeTousLesMots
      */
     private static void implementationDeTousLesMots() {
+        /* Permet de récupérer tous les mots dans le fichier saveMots.txt */
+        /*BufferedReader fichierMots;
+        String lineFichier;
+
+        try {
+            fichierMots = new BufferedReader(new FileReader(new File("pendu/saveMots.txt")));
+            while((lineFichier = fichierMots.readLine()) != null ) {
+                listeTousLesMots.add(lineFichier.replace('\n', ' ').trim());
+            }
+            fichierMots.close();
+        } catch(Exception e) {
+            System.out.println("Erreur Serveur / PenduImpl / implementationDeTousLesMots : " + e);
+        }*/
+
         listeTousLesMots.add("Brice");
         listeTousLesMots.add("Nicolas");
         listeTousLesMots.add("Leo");

@@ -103,14 +103,14 @@ public class PenduControleur implements Initializable {
     private Button btn_n;
 
     @FXML
-    private Button btn_state;
+    private Button btn_stats;
     @FXML
     private Button btn_nouvellePartiePendu;
 
     /* ----- ----- Appel de tout les variables pour le jeu du pendu ----- ----- */
 
     @FXML
-    private Pane pane_state;
+    private Pane pane_stats;
 
     @FXML
     private Label lbl_nbPartieJouer;
@@ -137,7 +137,7 @@ public class PenduControleur implements Initializable {
             initialisationTablePartie();
 
             pane_pendu.setVisible(true);
-            pane_state.setVisible(false);
+            pane_stats.setVisible(false);
 
             nouvellePartie();
         } catch (Exception e) {
@@ -164,7 +164,7 @@ public class PenduControleur implements Initializable {
 
             imgView_pendu.setImage(new Image(objPenduServ.getAdresseImage(0)));
 
-            btn_state.setVisible(false);
+            btn_stats.setVisible(false);
             btn_nouvellePartiePendu.setVisible(false);
 
             i = 0; // Active tous les boutons lettres.
@@ -203,7 +203,7 @@ public class PenduControleur implements Initializable {
     }
 
     /**
-     * La partie terminer, désactive tout les boutons lettres et active les boutons nouvelle partie et state.
+     * La partie terminer, désactive tout les boutons lettres et active les boutons nouvelle partie et stats.
      * Vérifie si le joueur à gagner ou perdu.
      */
     private void partieTerminer() {
@@ -213,7 +213,7 @@ public class PenduControleur implements Initializable {
         try {
             nbEssais = objPenduServ.getNbEssais(numPartie);
 
-            btn_state.setVisible(true);
+            btn_stats.setVisible(true);
             btn_nouvellePartiePendu.setVisible(true);
 
             i = 0; // Désactive tous les boutons lettres
@@ -251,19 +251,19 @@ public class PenduControleur implements Initializable {
     // ----- ----- Gestion de tous les OnCick pour le jeu du pendu ----- ----- //
 
     /**
-     * Action liée quand on clic sur le bouton "state" en monde pendu (jeu).
-     * On passe de l'affichage pendu (jeu) en state (info).
+     * Action liée quand on clic sur le bouton "stats" en monde pendu (jeu).
+     * On passe de l'affichage pendu (jeu) en stats (info).
      * @param event
      */
     @FXML
-    void OnCick_State(ActionEvent event) {
+    void OnCick_Stats(ActionEvent event) {
         try {
-            pane_state.setVisible(true);
+            pane_stats.setVisible(true);
             pane_pendu.setVisible(false);
 
-            miseEnPlaceDesStates();
+            miseEnPlaceDesStats();
         } catch (Exception e) {
-            System.out.println("Erreur Client / PenduControleur / OnCick_State : " + e);
+            System.out.println("Erreur Client / PenduControleur / OnCick_Stats : " + e);
         }
     }
 
@@ -277,7 +277,7 @@ public class PenduControleur implements Initializable {
         nouvellePartie();
     }
 
-    // ----- ----- Tout les fonctions intermédiaire pour les states ----- ----- //
+    // ----- ----- Tout les fonctions intermédiaire pour les stats ----- ----- //
 
     /**
      * Initialise le tableau des parties.
@@ -327,7 +327,7 @@ public class PenduControleur implements Initializable {
     /**
      * Affiche les states en fonction de toutes les parties passer.
      */
-    private void miseEnPlaceDesStates() {
+    private void miseEnPlaceDesStats() {
         int nbPartieJouer;
         int nbPartieGagnee;
         int nbPartiePerdu;
@@ -349,22 +349,22 @@ public class PenduControleur implements Initializable {
 
             miseEnPlaceDuTableau();
         } catch (Exception e) {
-            System.out.println("Erreur Client / PenduControleur / miseEnPlaceState : " + e);
+            System.out.println("Erreur Client / PenduControleur / miseEnPlaceStats : " + e);
         }
     }
 
-    // ----- ----- Gestion de tous les OnCick pour les states ----- ----- //
+    // ----- ----- Gestion de tous les OnCick pour les stats ----- ----- //
 
     /**
-     * Action liée quand on clic sur le bouton "nouvelle partie" en mode state (info).
-     * On passe de l'affichage state (info) en pendu (jeu).
+     * Action liée quand on clic sur le bouton "nouvelle partie" en mode stat (info).
+     * On passe de l'affichage stat (info) en pendu (jeu).
      * On relance une nouvelle partie.
      * @param event
      */
     @FXML
-    void OnCick_NouvellePartieState(ActionEvent event) {
+    void OnCick_NouvellePartieStats(ActionEvent event) {
         pane_pendu.setVisible(true);
-        pane_state.setVisible(false);
+        pane_stats.setVisible(false);
         nouvellePartie();
     }
 
