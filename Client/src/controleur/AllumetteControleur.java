@@ -35,10 +35,10 @@ public class AllumetteControleur implements Initializable {
     @FXML
     private Button btnConfirmer;
 
-    // Variable globale
-    private ArrayList<ImageView> listAllumette = new ArrayList<>();
-    private AllumetteInterface objAllumette;
-    private EtatPartie etatPartie;
+    // Variables globales
+    private ArrayList<ImageView> listAllumette = new ArrayList<>(); // Liste pour pouvoir cacher les images de manière efficace
+    private AllumetteInterface objAllumette;                        // Objet de connexion avec le serveur
+    private EtatPartie etatPartie;                                  // Etat de la partie stocker localement
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -46,12 +46,12 @@ public class AllumetteControleur implements Initializable {
             connexion();
             remplirListAllumette();
             etatPartie = objAllumette.initPartie();
-
         } catch(Exception e) {
             System.out.println("Erreur Client / AllumetteControleur / initialize : " + e);
         }
     }
 
+    // Mise en place de la connexion
     private void connexion() {
         int port = 8000;
         try {
@@ -62,21 +62,22 @@ public class AllumetteControleur implements Initializable {
         }
     }
 
+    // Fin du tour du joueur
     public void appuieConfirmer(ActionEvent actionEvent) {
         try {
-            btnConfirmer.setDisable(true);
-            etatPartie.coupJoueur(valeurSelection());
+            btnConfirmer.setDisable(true);                      // On empêche le joueur de clicker plusieurs fois pendant le traitement
+            etatPartie.coupJoueur(valeurSelection());           // Update locale de ce que le joueur vient de faire
             miseajourAffichage();
             miseajourRadiobtn2();
-            if(!objAllumette.finDePartie(etatPartie.getAllumetteRestante())) {
-                etatPartie = objAllumette.traitementCoup(etatPartie);
+            if(!objAllumette.finDePartie(etatPartie.getAllumetteRestante())) {          // Verification de si la partie prend fin
+                etatPartie = objAllumette.traitementCoup(etatPartie);                   // Coup du bot
                 miseajourAffichage();
                 miseajourRadiobtn2();
-                if(!objAllumette.finDePartie(etatPartie.getAllumetteRestante())) {
-                    btnConfirmer.setDisable(false);
+                if(!objAllumette.finDePartie(etatPartie.getAllumetteRestante())) {      // Verification de fin de partie pour le bot
+                    btnConfirmer.setDisable(false);                                     // On permet au joueur de faire son tour
                 }
                 else {
-                    ecritGagnant();
+                    ecritGagnant();                     // Si fin de partie -> designation du gagnant
                 }
             }
             else {
@@ -87,6 +88,7 @@ public class AllumetteControleur implements Initializable {
         }
     }
 
+    // Met à jour tout l'affichage
     public void miseajourAffichage() {
         lblAffichAllumetteRestante.setText(String.valueOf(etatPartie.getAllumetteRestante()));
         lblAffichAllumetteJoueur.setText(String.valueOf(etatPartie.getAllumetteJoueur()));
@@ -94,12 +96,14 @@ public class AllumetteControleur implements Initializable {
         miseajourAffichageAllumette();
     }
 
+    // Met à jour l'affichage des images
     public void miseajourAffichageAllumette() {
         for(int i = etatPartie.getAllumetteRestante(); i < etatPartie.getAllumetteRestante() + valeurSelection(); i++) {
             listAllumette.get(i+1).setVisible(false);
-        }
+        }   // On a besion de cacher, grâce à la liste seulement ceux qui viennent d'être enlever
     }
 
+    // Simple fonction qui renvoie le nombre d'allumettes en fonction de la séléction
     public int valeurSelection() {
         if(radiobtnChoix1.isSelected()) {
             return 1;
@@ -107,6 +111,7 @@ public class AllumetteControleur implements Initializable {
         return 2;
     }
 
+    // La fonction permet d'empêcher d'avoir des coups illégaux comme ceux qui ferais passer en dessous de 0
     private void miseajourRadiobtn2() {
         if (etatPartie.getAllumetteRestante() == 1) {
             radiobtnChoix1.setSelected(true);
@@ -114,6 +119,7 @@ public class AllumetteControleur implements Initializable {
         }
     }
 
+    // Affiche un message à la fin de la partie
     public void ecritGagnant() {
         try {
             if(objAllumette.designGagnant(etatPartie.getAllumetteJoueur())) {
