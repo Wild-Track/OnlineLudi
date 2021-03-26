@@ -11,18 +11,18 @@ public class AllumetteImpl extends UnicastRemoteObject implements AllumetteInter
     public AllumetteImpl() throws RemoteException {}
 
     // Initialisation de l'etat de la partie
-    public EtatPartie initPartie() {
+    public EtatPartie initPartie() throws RemoteException {
         etat = new EtatPartie(15, 0, 0);
         return etat;
     }
 
     // Fin de partie lorsqu'il n'y a plus d'allumette sur le plateau
-    public boolean finDePartie(int allumetteRestante) {
+    public boolean finDePartie(int allumetteRestante) throws RemoteException {
         return allumetteRestante == 0;
     }
 
     // Traitement de coup pour le bot appeler après le joueur
-    public EtatPartie traitementCoup(EtatPartie etatClient) {
+    public EtatPartie traitementCoup(EtatPartie etatClient) throws RemoteException {
         try {
             etat = etatClient;
             TimeUnit.SECONDS.sleep(3);          // On laisse 3 secondes après le coup du joueur pour ne pas avoir un retour instantané
@@ -35,7 +35,7 @@ public class AllumetteImpl extends UnicastRemoteObject implements AllumetteInter
     }
 
     // Envoie le gagnant grâce à un bouléen
-    public boolean designGagnant(int allumetteJoueur) {
+    public boolean designGagnant(int allumetteJoueur) throws RemoteException {
         return allumetteJoueur % 2 == 1;                // Vrai si le joueur à un nombre impair d'allumette
     }
 
