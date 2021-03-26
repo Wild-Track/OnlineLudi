@@ -1,5 +1,6 @@
 package controleur;
 
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -65,5 +66,25 @@ public class MainControleur
 
     public void goToOthello(MouseEvent mouseEvent)
     {
+        try {
+            Stage parentStage = (Stage)((Node) mouseEvent.getSource()).getScene().getWindow();
+            parentStage.hide();
+
+            URL fxmlURL = getClass().getResource("/vue/othello/OthelloVue.fxml");
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("OTHELLO");
+            stage.setScene(new Scene(root, 700, 700));
+            stage.show();
+
+
+        } catch (Exception e) {
+            System.out.println("Erreur en chargeant la vue : " + e.toString());
+        }
     }
 }

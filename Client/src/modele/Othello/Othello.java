@@ -1,26 +1,28 @@
 package modele.Othello;
 
+import othello.Couleur;
+
 public class Othello
 {
     private final int TAILLE = 8;
-    private Pion othellier[][] = new Pion[TAILLE][TAILLE];
+    private Couleur othellier[][] = new Couleur[TAILLE][TAILLE];
     private Couleur couleurJoueur;
     private Couleur couleurEnnemi;
-    /*Qui est la couleur du joueur qui tourne ce client */
+    /* Qui est la couleur du joueur qui tourne ce client */
 
     public Othello(Couleur couleurJoueur)
     {
-        for (Pion[] ligne: othellier)
+        for (Couleur[] ligne: othellier)
         {
-            for (Pion pion: ligne)
+            for (Couleur couleur: ligne)
             {
-                pion.setCouleur(Couleur.VIDE);
+                couleur = Couleur.VIDE;
             }
         }
-        othellier[5][4].setCouleur(Couleur.NOIR);
-        othellier[4][5].setCouleur(Couleur.NOIR);
-        othellier[4][4].setCouleur(Couleur.NOIR);
-        othellier[5][5].setCouleur(Couleur.NOIR);
+        othellier[4][3] = Couleur.NOIR;
+        othellier[3][4] = Couleur.NOIR;
+        othellier[3][3] = Couleur.BLANC;
+        othellier[4][4] = Couleur.BLANC;
 
         this.couleurJoueur = couleurJoueur;
         if (couleurJoueur == Couleur.BLANC)
@@ -33,12 +35,12 @@ public class Othello
         }
     }
 
-    public Pion[][] getOthellier()
+    public Couleur[][] getOthellier()
     {
         return othellier;
     }
 
-    public void setOthellier(Pion[][] othellier)
+    public void setOthellier(Couleur[][] othellier)
     {
         this.othellier = othellier;
     }
