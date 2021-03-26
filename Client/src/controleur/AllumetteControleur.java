@@ -64,13 +64,23 @@ public class AllumetteControleur implements Initializable {
 
     public void appuieConfirmer(ActionEvent actionEvent) {
         try {
+            btnConfirmer.setDisable(true);
             etatPartie.coupJoueur(valeurSelection());
             miseajourAffichage();
             miseajourRadiobtn2();
-            btnConfirmer.setDisable(true);
             if(!objAllumette.finDePartie(etatPartie.getAllumetteRestante())) {
                 etatPartie = objAllumette.traitementCoup(etatPartie);
-                btnConfirmer.setDisable(false);
+                miseajourAffichage();
+                miseajourRadiobtn2();
+                if(!objAllumette.finDePartie(etatPartie.getAllumetteRestante())) {
+                    btnConfirmer.setDisable(false);
+                }
+                else {
+                    ecritGagnant();
+                }
+            }
+            else {
+                ecritGagnant();
             }
         } catch (Exception e) {
             System.out.println("Erreur Client / AllumetteControleur / appuieConfirmer : " + e);
@@ -81,6 +91,13 @@ public class AllumetteControleur implements Initializable {
         lblAffichAllumetteRestante.setText(String.valueOf(etatPartie.getAllumetteRestante()));
         lblAffichAllumetteJoueur.setText(String.valueOf(etatPartie.getAllumetteJoueur()));
         lblAffichAllumetteBot.setText(String.valueOf(etatPartie.getAllumetteBot()));
+        miseajourAffichageAllumette();
+    }
+
+    public void miseajourAffichageAllumette() {
+        for(int i = etatPartie.getAllumetteRestante(); i < etatPartie.getAllumetteRestante() + valeurSelection(); i++) {
+            listAllumette.get(i+1).setVisible(false);
+        }
     }
 
     public int valeurSelection() {
@@ -94,6 +111,19 @@ public class AllumetteControleur implements Initializable {
         if (etatPartie.getAllumetteRestante() == 1) {
             radiobtnChoix1.setSelected(true);
             radiobtnChoix2.setDisable(true);
+        }
+    }
+
+    public void ecritGagnant() {
+        try {
+            if(objAllumette.designGagnant(etatPartie.getAllumetteJoueur())) {
+                lblMessage.setText("Vous avez gagné(e) !");
+            }
+            else {
+                lblMessage.setText("Vous avez perdu(e) !");
+            }
+        } catch (RemoteException e) {
+            System.out.println("Erreur Client / AllumetteControleur / ecritGagnant : " + e);
         }
     }
 

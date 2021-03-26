@@ -1,8 +1,6 @@
 package modele.allumette;
 
-import java.io.Serializable;
-
-public class EtatPartie implements Serializable {
+public class EtatPartie {
     private int allumetteRestante;
     private int allumetteJoueur;
     private int allumetteBot;

@@ -10,18 +10,15 @@ public class AllumetteImpl extends UnicastRemoteObject implements AllumetteInter
 
     public AllumetteImpl() throws RemoteException {}
 
-    @Override
     public EtatPartie initPartie() {
         etat = new EtatPartie(15, 0, 0);
         return etat;
     }
 
-    @Override
     public boolean finDePartie(int allumetteRestante) {
         return allumetteRestante == 0;
     }
 
-    @Override
     public EtatPartie traitementCoup(EtatPartie etatClient) {
         try {
             etat = etatClient;
@@ -32,6 +29,10 @@ public class AllumetteImpl extends UnicastRemoteObject implements AllumetteInter
             System.out.println("Erreur Client / AllumetteControleur / traitementCoup : " + e);
         }
         return etat;
+    }
+
+    public boolean designGagnant(int allumetteJoueur) {
+        return allumetteJoueur % 2 == 1;
     }
 
 
