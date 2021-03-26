@@ -1,4 +1,4 @@
-package controleur.Othello;
+package controleur.othello;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

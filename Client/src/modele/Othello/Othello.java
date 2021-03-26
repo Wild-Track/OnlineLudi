@@ -1,4 +1,4 @@
-package modele.Othello;
+package modele.othello;
 
 import othello.Couleur;
 

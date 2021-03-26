@@ -1,4 +1,4 @@
-package controleur.Othello;
+package controleur.othello;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import othello.Couleur;
-import modele.Othello.Othello;
+import modele.othello.Othello;
 import othello.OthelloInterface;
 
 import java.net.MalformedURLException;
