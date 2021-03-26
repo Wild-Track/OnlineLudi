@@ -60,7 +60,7 @@ public class MainControleur
             stage.showAndWait();
         } catch (Exception e) {
             System.out.println("Erreur Client / MainControleur / goToAllumettes : " + e);
-    }
+        }
     }
 
     public void goToOthello(MouseEvent mouseEvent)
