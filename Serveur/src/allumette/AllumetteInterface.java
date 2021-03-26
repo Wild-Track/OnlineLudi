@@ -1,4 +1,4 @@
-package modele.allumette;
+package allumette;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

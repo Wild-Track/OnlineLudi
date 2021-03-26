@@ -1,4 +1,4 @@
-package modele.allumette;
+package allumette;
 
 import java.io.Serializable;
 
@@ -47,3 +47,4 @@ public class EtatPartie implements Serializable {
         this.allumetteBot = allumetteBot + allumettePrise;
     }
 }
+

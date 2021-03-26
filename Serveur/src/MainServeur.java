@@ -1,3 +1,4 @@
+import allumette.AllumetteImpl;
 import pendu.PenduImpl;
 
 import java.rmi.Naming;
@@ -10,6 +11,7 @@ public class MainServeur {
             LocateRegistry.createRegistry(port);
 
             Naming.rebind("rmi://localhost:" + port + "/pendu", new PenduImpl());
+            Naming.rebind("rmi://localhost:" + port + "/allumette", new AllumetteImpl());
 
             System.out.println("Hello Serveur");
         } catch (Exception e) {

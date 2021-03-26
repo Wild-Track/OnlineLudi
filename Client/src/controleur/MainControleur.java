@@ -45,8 +45,22 @@ public class MainControleur
         }
     }
 
-    public void goToAllumettes(MouseEvent mouseEvent)
-    {
+    public void goToAllumettes(MouseEvent mouseEvent) {
+        try {
+            URL fxmlURL = getClass().getResource("../vue/allumette/AllumetteVue.fxml");
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Jeu des Allumettes");
+            stage.setScene(new Scene(root, 800, 500));
+            stage.showAndWait();
+        } catch (Exception e) {
+            System.out.println("Erreur Client / MainControleur / goToAllumettes : " + e);
+    }
     }
 
     public void goToOthello(MouseEvent mouseEvent)

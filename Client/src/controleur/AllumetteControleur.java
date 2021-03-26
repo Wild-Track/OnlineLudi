@@ -37,20 +37,25 @@ public class AllumetteControleur implements Initializable {
 
     // Variable globale
     private ArrayList<ImageView> listAllumette = new ArrayList<>();
+    private AllumetteInterface objAllumette;
+    private EtatPartie etatPartie;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        remplirListAllumette();
-        connexion();
+        try {
+            connexion();
+            remplirListAllumette();
+            etatPartie = objAllumette.initPartie();
 
-
+        } catch(Exception e) {
+            System.out.println("Erreur Client / AllumetteControleur / initialize : " + e);
+        }
     }
 
     private void connexion() {
         int port = 8000;
         try {
-            AllumetteInterface objAllumette = (AllumetteInterface) Naming.lookup("rmi://localhost:" + port + "/allumette");
-            objAllumette.setEtat(15, 0, 0);
+            objAllumette = (AllumetteInterface) Naming.lookup("rmi://localhost:" + port + "/allumette");
         }
         catch(NotBoundException | MalformedURLException | RemoteException e) {
             System.out.println("Erreur Client / AllumetteControleur / connexion : " + e);
@@ -58,16 +63,41 @@ public class AllumetteControleur implements Initializable {
     }
 
     public void appuieConfirmer(ActionEvent actionEvent) {
-
+        try {
+            etatPartie.coupJoueur(valeurSelection());
+            miseajourAffichage();
+            miseajourRadiobtn2();
+            btnConfirmer.setDisable(true);
+            if(!objAllumette.finDePartie(etatPartie.getAllumetteRestante())) {
+                etatPartie = objAllumette.traitementCoup(etatPartie);
+                btnConfirmer.setDisable(false);
+            }
+        } catch (Exception e) {
+            System.out.println("Erreur Client / AllumetteControleur / appuieConfirmer : " + e);
+        }
     }
 
-    private void verifApresCoup(EtatPartie etat) {
-        if (etat.getAllumetteRestante() == 1) {
+    public void miseajourAffichage() {
+        lblAffichAllumetteRestante.setText(String.valueOf(etatPartie.getAllumetteRestante()));
+        lblAffichAllumetteJoueur.setText(String.valueOf(etatPartie.getAllumetteJoueur()));
+        lblAffichAllumetteBot.setText(String.valueOf(etatPartie.getAllumetteBot()));
+    }
+
+    public int valeurSelection() {
+        if(radiobtnChoix1.isSelected()) {
+            return 1;
+        }
+        return 2;
+    }
+
+    private void miseajourRadiobtn2() {
+        if (etatPartie.getAllumetteRestante() == 1) {
             radiobtnChoix1.setSelected(true);
             radiobtnChoix2.setDisable(true);
         }
     }
 
+    // Remplit la liste avec toutes les images
     private void remplirListAllumette() {
         listAllumette.add(imgAllumette1);
         listAllumette.add(imgAllumette2);
