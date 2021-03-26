@@ -34,7 +34,9 @@ public class EtatPartie implements Serializable {
         return allumetteBot;
     }
 
-    public void setAllumetteBot(int allumetteBot) { this.allumetteBot = allumetteBot; }
+    public void setAllumetteBot(int allumetteBot) {
+        this.allumetteBot = allumetteBot;
+    }
 
     // Mise à jour après un coup pour le joueur
     public void coupJoueur(int allumettePrise) {
