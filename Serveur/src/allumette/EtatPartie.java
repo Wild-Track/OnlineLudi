@@ -1,6 +1,8 @@
 package allumette;
 
-public class EtatPartie {
+import java.io.Serializable;
+
+public class EtatPartie implements Serializable {
     private int allumetteRestante;      // Sert a garder les allumettes restantes
     // Sachant que le nombre d'allumettes est constant on pourrait enlever une des deux variables suivantes mais c'est plus claire avec deux
     private int allumetteJoueur;

@@ -1,6 +1,8 @@
 package modele.allumette;
 
-public class EtatPartie {
+import java.io.Serializable;
+
+public class EtatPartie implements Serializable {
     private int allumetteRestante;      // Sert a garder les allumettes restantes
     // Sachant que le nombre d'allumettes est constant on pourrait enlever une des deux variables suivantes mais c'est plus claire avec deux
     private int allumetteJoueur;
@@ -32,9 +34,7 @@ public class EtatPartie {
         return allumetteBot;
     }
 
-    public void setAllumetteBot(int allumetteBot) {
-        this.allumetteBot = allumetteBot;
-    }
+    public void setAllumetteBot(int allumetteBot) { this.allumetteBot = allumetteBot; }
 
     // Mise à jour après un coup pour le joueur
     public void coupJoueur(int allumettePrise) {
