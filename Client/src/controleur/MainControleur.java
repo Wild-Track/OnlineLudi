@@ -10,10 +10,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.FXML;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URI;
-import java.awt.*;
 
 public class MainControleur
 {
@@ -67,10 +67,10 @@ public class MainControleur
     public void goToOthello(MouseEvent mouseEvent)
     {
         try {
-            Stage parentStage = (Stage)((Node) mouseEvent.getSource()).getScene().getWindow();
-            parentStage.hide();
+            /*Stage parentStage = (Stage)((Node) mouseEvent.getSource()).getScene().getWindow();
+            parentStage.hide();*/
 
-            URL fxmlURL = getClass().getResource("/vue/othello/OthelloVue.fxml");
+            URL fxmlURL = getClass().getResource("../vue/othello/OthelloVue.fxml");
             FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
             Parent root = fxmlLoader.load();
 

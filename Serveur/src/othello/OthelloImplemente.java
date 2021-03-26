@@ -65,7 +65,7 @@ public class OthelloImplemente extends UnicastRemoteObject implements OthelloInt
 
         Couleur couleurEnnemi = couleurJoueur.getCouleurEnnemi();
 
-        while (othellier[ligne][colonne].equals(couleurEnnemi))
+        while (othellier[ligne][colonne] == couleurEnnemi)
         {
             ligne += ligneDirection;
             colonne += colonneDirection;
@@ -73,7 +73,7 @@ public class OthelloImplemente extends UnicastRemoteObject implements OthelloInt
             {
                 return false;
             }
-            if (othellier[ligne][colonne].equals(couleurEnnemi))
+            if (othellier[ligne][colonne] == couleurEnnemi)
             {
                 return true;
             }
@@ -157,7 +157,7 @@ public class OthelloImplemente extends UnicastRemoteObject implements OthelloInt
     }
 
     @Override
-    public Couleur gagnant(int numeroPartie)
+    public Couleur gagnant(int numeroPartie)  throws RemoteException
     {
         int couleurBlanc = 0;
         int couleurNoir = 0;
@@ -211,70 +211,4 @@ public class OthelloImplemente extends UnicastRemoteObject implements OthelloInt
         }
         return true;
     }
-
-
-
-
-    /*
-        public ArrayList<AbstractMap.SimpleEntry<Integer, Integer>> coupPossible(Othello othello)
-        {
-            ArrayList<AbstractMap.SimpleEntry<Integer, Integer>> coordonnees = new ArrayList<>();
-            for (int ligne = 0; ligne < TAILLE; ligne++)
-            {
-                for (int colonne = 0; colonne < TAILLE; colonne++)
-                {
-                    *//* Ici on peut faire le test de la fonction directement dans le if car && est un opérateur de court circuit
-                dans le cas ou la case de l'othellier ne serai pas vide *//*
-                if (othello.getOthellier()[ligne][colonne].equals(Couleur.VIDE) && verificationCoup(othello, ligne, colonne))
-                {
-                    coordonnees.add(new AbstractMap.SimpleEntry<>(ligne, colonne));
-                }
-            }
-        }
-
-        return coordonnees;
-    }
-
-    *//* Vérifications pour savoir si un coup est possible *//*
-    public boolean verificationCoup(Othello othello, int ligne, int colonne)
-    {
-
-        *//* Vérification des 8 directions différentes : diagonales, horizontales, verticales *//*
-        return  verificationCoupRangee(othello, ligne, colonne, 1, 0) ||
-                verificationCoupRangee(othello, ligne, colonne, 1, 1) ||
-                verificationCoupRangee(othello, ligne, colonne, 0, 1) ||
-                verificationCoupRangee(othello, ligne, colonne, -1, 1) ||
-                verificationCoupRangee(othello, ligne, colonne, -1, 0) ||
-                verificationCoupRangee(othello, ligne, colonne, -1, -1) ||
-                verificationCoupRangee(othello, ligne, colonne, 0, -1) ||
-                verificationCoupRangee(othello, ligne, colonne, 1, -1);
-    }
-
-    *//* Verification pour une seule rangée dans une direction donnée *//*
-    public boolean verificationCoupRangee(Othello othello, int ligne, int colonne, int ligneDirection, int colonneDirection)
-    {
-        Couleur othellier[][] = othello.getOthellier();
-        colonne =+ colonneDirection;
-        ligne =+ ligneDirection;
-
-        if (0 >= colonne || colonne >= 8 || 0 >= ligne || ligne >= 8)
-        {
-            return false;
-        }
-
-        while (othellier[ligne][colonne].equals(othello.getCouleurEnnemi()))
-        {
-            ligne += ligneDirection;
-            colonne += colonneDirection;
-            if (0 > colonne || colonne > 8 || 0 > ligne || ligne > 8)
-            {
-                return false;
-            }
-            if (othellier[ligne][colonne].equals(othello.getCouleurJoueur()))
-            {
-                return true;
-            }
-        }
-        return false;
-    }*/
 }

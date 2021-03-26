@@ -1,5 +1,4 @@
 import allumette.AllumetteImpl;
-import othello.Couleur;
 import othello.OthelloImplemente;
 import othello.Partie;
 import pendu.PenduImpl;

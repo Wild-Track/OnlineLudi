@@ -1,5 +1,5 @@
 
-package othello;
+package modele.othello;
 public enum Couleur
 {
     NOIR, BLANC, VIDE;

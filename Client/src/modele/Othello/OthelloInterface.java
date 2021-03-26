@@ -1,4 +1,4 @@
-package othello;
+package modele.othello;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
