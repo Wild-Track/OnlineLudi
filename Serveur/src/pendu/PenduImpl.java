@@ -38,25 +38,25 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
         implementationDeTousLesMots();
     }
 
-    /* ----- ----- Fonction pour le jeu ----- ----- */
+    /* ----- ----- Les fonctions pour les implémentations au lancement du serveur ----- ----- */
 
     /**
      * Implémentation de tous les mots dans l'ArrayList listeTousLesMots
      */
     private static void implementationDeTousLesMots() {
         /* Permet de récupérer tous les mots dans le fichier saveMots.txt */
-        /*BufferedReader fichierMots;
+        BufferedReader fichierMots;
         String lineFichier;
 
         try {
-            fichierMots = new BufferedReader(new FileReader(new File("pendu/saveMots.txt")));
+            fichierMots = new BufferedReader(new FileReader(new File("Serveur/src/pendu/saveMots.txt")));
             while((lineFichier = fichierMots.readLine()) != null ) {
                 listeTousLesMots.add(lineFichier.replace('\n', ' ').trim());
             }
             fichierMots.close();
         } catch(Exception e) {
             System.out.println("Erreur Serveur / PenduImpl / implementationDeTousLesMots : " + e);
-        }*/
+        }
 
         listeTousLesMots.add("Brice");
         listeTousLesMots.add("Nicolas");
@@ -80,6 +80,8 @@ public class PenduImpl extends UnicastRemoteObject implements PenduInterface {
             listeAdresseImage.add("modele/pendu/image/Pendu" + i + ".png");
         }
     }
+
+    /* ----- ----- Fonction pour le jeu ----- ----- */
 
     /**
      * Mise ne place d'une nouvelle partie du coté serveur.
